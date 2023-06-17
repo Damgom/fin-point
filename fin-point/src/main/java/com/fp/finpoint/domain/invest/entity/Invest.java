@@ -70,10 +70,6 @@ public class Invest extends Auditable {
         this.piece = piece;
     }
 
-//    public void setFileEntity(FileEntity fileEntity) {
-//        this.fileEntity = fileEntity;
-//    }
-
     public void setSubject(String subject) {
         this.subject = subject;
     }

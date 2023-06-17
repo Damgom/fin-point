@@ -40,9 +40,4 @@ public class TokenController {
         return "banking";
     }
 
-    @GetMapping("/finpoint/bank/account")
-    @ResponseBody
-    public void getAccountList(HttpServletRequest request) {
-        tokenService.getAccountList(request);
-    }
 }
