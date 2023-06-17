@@ -48,7 +48,7 @@ public class Member extends Auditable {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
   
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "token_id")
     private Token token;
 
