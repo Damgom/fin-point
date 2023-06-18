@@ -54,10 +54,12 @@ public class TokenService {
         return requireUrl;
     }
 
+    @Transactional
     public void saveToken(String requestToken, HttpServletRequest request) {
         TokenResponseDto tokenResponseDto =
                 bankingFeign.requestToken(requestToken, clientId, clientSecret, redirectUri, grantType);
         setTokenToMember(tokenResponseDto.toEntity(), request);
+        getAccountList(request);
     }
 
     public void setTokenToMember(Token token, HttpServletRequest request) {

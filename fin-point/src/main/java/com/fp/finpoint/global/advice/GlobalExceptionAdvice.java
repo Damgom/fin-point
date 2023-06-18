@@ -1,4 +1,4 @@
-package com.fp.finpoint.advice;
+package com.fp.finpoint.global.advice;
 
 
 import com.fp.finpoint.global.exception.BusinessLogicException;

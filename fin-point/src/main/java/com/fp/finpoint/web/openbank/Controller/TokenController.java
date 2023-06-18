@@ -30,7 +30,7 @@ public class TokenController {
     public void requestToken(@RequestParam("code") String code,
                                @RequestParam("scope") String scope,
                                @RequestParam("state") String state,
-                               HttpServletRequest request) throws UnsupportedEncodingException {
+                               HttpServletRequest request) {
         log.info("code = {}", code);
         tokenService.saveToken(code, request);
     }
@@ -40,9 +40,4 @@ public class TokenController {
         return "banking";
     }
 
-    @GetMapping("/finpoint/bank/account")
-    @ResponseBody
-    public void getAccountList(HttpServletRequest request) throws UnsupportedEncodingException {
-        tokenService.getAccountList(request);
-    }
 }
