@@ -19,8 +19,12 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static com.fp.finpoint.global.util.CookieUtil.*;
+import static com.fp.finpoint.global.util.RedisUtil.*;
 
 @Slf4j
 @Service
@@ -29,30 +33,15 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EmailSenderService emailSenderService;
-    private final RedisUtil redisUtil;
     private final FileRepository fileRepository;
     private final PieceCustomRepositoryImpl pieceRepo;
 
     public void registerMember(MemberDto memberDto) {
-        // 검증
         isExistEmail(memberDto.getEmail());
-
-        // 암호화
         String salt = PasswordEncoder.generateSalt();
         String password = PasswordEncoder.hashPassword(memberDto.getPassword(), salt);
-
-        // 권한
-        Set<Role> roles = new HashSet<>();
-        roles.add(Role.ROLE_USER);
-
-        // 등록
-        FileEntity file = new FileEntity();
-        file.setOriginName("");
-        file.setOriginName("");
-        file.setSavedPath("/images/default.jpg");
-        FileEntity save = fileRepository.save(file);
-
-
+        Set<Role> roles = getRoles();
+        FileEntity save = getFileEntity();
         Member member = Member.builder()
                 .email(memberDto.getEmail())
                 .password(password)
@@ -61,7 +50,6 @@ public class MemberService {
                 .oauthClient(OauthClient.NOTHING)
                 .fileEntity(save)
                 .build();
-
         memberRepository.save(member);
         log.info("# Successful Member Registration!");
     }
@@ -76,20 +64,14 @@ public class MemberService {
 
     public void oauthJoin(String email, OauthClient oauthClient) {
         isExistEmail(email);
-        Set<Role> roles = new HashSet<>();
-        roles.add(Role.ROLE_USER);
-        FileEntity file = new FileEntity();
-        file.setOriginName("");
-        file.setOriginName("");
-        file.setSavedPath("/images/default.jpg");
-        FileEntity save = fileRepository.save(file);
+        Set<Role> roles = getRoles();
+        FileEntity save = getFileEntity();
         Member member = Member.builder().
                 email(email)
                 .roles(roles)
                 .oauthClient(oauthClient)
                 .fileEntity(save)
                 .build();
-
         memberRepository.save(member);
         log.info("# {} OAuth Member Registration & Login Complete!", oauthClient);
     }
@@ -102,7 +84,6 @@ public class MemberService {
     }
 
     public void doLogin(MemberDto memberDto) {
-        //TODO: REFRESH TOKEN CHECK
         Member savedMember = inspectEmailExistence(memberDto.getEmail());
         OauthClient oauthClient = savedMember.getOauthClient();
         switch (oauthClient) {
@@ -121,7 +102,7 @@ public class MemberService {
     }
 
     public String checkCode(String code) {
-        String value = redisUtil.getRedisValue(code);
+        String value = getRedisValue(code);
         if (value == null) {
             throw new BusinessLogicException(ExceptionCode.CODE_EXPIRED);
         }
@@ -131,9 +112,9 @@ public class MemberService {
     public void registerTokenInCookie(String email, HttpServletResponse response) {
         String accessToken = JwtUtil.createAccessToken(email);
         String refreshToken = JwtUtil.createRefreshToken();
-        redisUtil.setRedisValue(email, refreshToken, 10, TimeUnit.DAYS);
-        CookieUtil.setAccessTokenInCookie(response, JwtUtil.AUTHORIZATION, accessToken);
-        CookieUtil.addRefreshInCookie(response, JwtUtil.REFRESH, refreshToken);
+        setRedisValue(email, refreshToken, 10, TimeUnit.DAYS);
+        setAccessTokenInCookie(response, JwtUtil.AUTHORIZATION, accessToken);
+        addRefreshInCookie(response, JwtUtil.REFRESH, refreshToken);
     }
 
     public void addSeller(String loginUserEmail) {
@@ -169,13 +150,13 @@ public class MemberService {
 
     private void setMemberInRedisWithCode(Member member, String code) {
         String email = member.getEmail();
-        redisUtil.setRedisValue(code, email, 3, TimeUnit.MINUTES);
+        setRedisValue(code, email, 3, TimeUnit.MINUTES);
         log.info("# Code set in Redis!");
     }
 
 
     public MypageDto getMypageInfo(HttpServletRequest request) {
-        String email = CookieUtil.getEmailToCookie(request);
+        String email = getEmailToCookie(request);
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         List<Piece> pieceList = pieceRepo.findPieceListByMember(member);
@@ -194,17 +175,30 @@ public class MemberService {
         mypageDto.setPiecePrice(totalPreice);
         mypageDto.setEmail(email);
         mypageDto.setGoal(Objects.requireNonNullElse(goal, 0));
-        mypageDto.setNickname("Email");//TODO:SPEND, NICKNAME
+        mypageDto.setNickname("Email");
         mypageDto.setSpend(47000L);
         return mypageDto;
     }
 
+    @Transactional
     public void saveGoal(Integer goal, HttpServletRequest request) {
-        String email = CookieUtil.getEmailToCookie(request);
+        String email = getEmailToCookie(request);
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         member.setGoal(goal);
-        memberRepository.save(member);
     }
 
+    private static Set<Role> getRoles() {
+        Set<Role> roles = new HashSet<>();
+        roles.add(Role.ROLE_USER);
+        return roles;
+    }
+
+    private FileEntity getFileEntity() {
+        FileEntity file = new FileEntity();
+        file.setOriginName("");
+        file.setOriginName("");
+        file.setSavedPath("/images/default.jpg");
+        return fileRepository.save(file);
+    }
 }
