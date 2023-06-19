@@ -68,16 +68,11 @@ public class InvestController {
     @GetMapping(value = "/invest/list/detail/{id}")
     public String detail(Model model, @PathVariable("id") Long id,HttpServletRequest request) {
         Invest readInvestDetail = investService.readInvestDetail(id);
-        model.addAttribute("investDetail", readInvestDetail);
-
-        boolean like;
         String email = CookieUtil.getEmailToCookie(request);
-        Member savedMember = memberRepository.findByEmail(email).orElseThrow(
-                () -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND)
-        );
-        like = likeService.findLike(id, email);
-        model.addAttribute("like",like);
+        boolean like = likeService.findLike(id, email);
         Piece savedPiece = readInvestDetail.getPiece();
+        model.addAttribute("investDetail", readInvestDetail);
+        model.addAttribute("like",like);
         model.addAttribute("piece", savedPiece);
         return "invest_detail";
     }

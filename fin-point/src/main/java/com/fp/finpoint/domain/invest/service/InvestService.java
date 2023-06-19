@@ -31,12 +31,11 @@ public class InvestService {
     private final InvestRepository investRepository;
     private final MemberRepository memberRepository;
     private final PieceMemberRepository pieceMemberRepository;
-    private final PieceRepository pieceRepository;
 
     //게시글 리스트.
     public List<Invest> getInvestList() {
 
-        return this.investRepository.findAll();
+        return investRepository.findAll();
     }
 
     // 특정 게시글.
