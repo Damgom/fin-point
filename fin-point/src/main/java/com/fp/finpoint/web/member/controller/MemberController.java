@@ -1,6 +1,5 @@
 package com.fp.finpoint.web.member.controller;
 
-import com.fp.finpoint.domain.file.service.FileService;
 import com.fp.finpoint.domain.member.dto.MemberDto;
 import com.fp.finpoint.domain.member.service.MemberService;
 import com.fp.finpoint.global.util.CookieUtil;
@@ -13,13 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 @Slf4j
 @Validated
@@ -28,8 +23,6 @@ import java.io.UnsupportedEncodingException;
 public class MemberController {
 
     private final MemberService memberService;
-    private final FileService fileService;
-    private final CookieUtil cookieUtil;
 
     @GetMapping("/finpoint/join")
     public String join() {
@@ -38,7 +31,7 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("/finpoint/join")
-    public ResponseEntity<HttpStatus> join(@Valid @RequestBody MemberDto memberDto) throws IOException {
+    public ResponseEntity<HttpStatus> join(@Valid @RequestBody MemberDto memberDto) {
         memberService.registerMember(memberDto);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -51,13 +44,13 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("/finpoint/login")
-    public ResponseEntity<HttpStatus> login(@Valid @RequestBody MemberDto memberDto) throws MessagingException {
+    public ResponseEntity<HttpStatus> login(@Valid @RequestBody MemberDto memberDto) {
         memberService.doLogin(memberDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/finpoint/mail-confirm")
-    public String mailconfirm(){return "user/login/mail-confirm";}
+    public String mailConfirm(){return "user/login/mail-confirm";}
 
     @ResponseBody
     @PostMapping("/finpoint/mail-confirm")
@@ -69,7 +62,7 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("/finpoint/assign-seller")
-    public ResponseEntity<HttpStatus> assignSeller(HttpServletRequest request) throws UnsupportedEncodingException {
+    public ResponseEntity<HttpStatus> assignSeller(HttpServletRequest request) {
         String accessToken = CookieUtil.getAccessToken(request.getCookies());
         String loginUserEmail = JwtUtil.getEmail(accessToken);
         memberService.addSeller(loginUserEmail);
@@ -77,7 +70,7 @@ public class MemberController {
     }
 
     @GetMapping("/finpoint/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.deleteCookie(JwtUtil.AUTHORIZATION,response);
         CookieUtil.deleteCookie(JwtUtil.REFRESH,response);
         return "redirect:/";

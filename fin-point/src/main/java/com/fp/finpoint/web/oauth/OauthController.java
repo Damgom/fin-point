@@ -3,7 +3,6 @@ package com.fp.finpoint.web.oauth;
 import com.fp.finpoint.domain.oauth.google.GoogleService;
 import com.fp.finpoint.domain.oauth.kakao.KakaoService;
 import com.fp.finpoint.domain.oauth.naver.NaverService;
-import com.fp.finpoint.global.util.CookieUtil;
 import com.fp.finpoint.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+
+import static com.fp.finpoint.global.util.CookieUtil.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -62,7 +63,7 @@ public class OauthController {
     }
 
     private static void setTokenInCookie(HttpServletResponse response, String getToken) {
-        CookieUtil.setAccessTokenInCookie(response, JwtUtil.AUTHORIZATION, getToken);
-        CookieUtil.addRefreshInCookie(response, JwtUtil.REFRESH, getToken);
+        setAccessTokenInCookie(response, JwtUtil.AUTHORIZATION, getToken);
+        addRefreshInCookie(response, JwtUtil.REFRESH, getToken);
     }
 }
