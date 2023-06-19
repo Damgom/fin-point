@@ -7,7 +7,6 @@ import com.fp.finpoint.domain.openbank.Entity.Token;
 import com.fp.finpoint.global.exception.BusinessLogicException;
 import com.fp.finpoint.global.exception.ExceptionCode;
 import com.fp.finpoint.global.util.CookieUtil;
-import com.fp.finpoint.global.util.JwtUtil;
 import com.fp.finpoint.web.openbank.dto.AccountResponseDto;
 import com.fp.finpoint.web.openbank.dto.TokenResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor

@@ -8,7 +8,6 @@ import com.fp.finpoint.domain.member.repository.MemberRepository;
 import com.fp.finpoint.domain.piece.Entity.Piece;
 import com.fp.finpoint.domain.piece.Entity.PieceMember;
 import com.fp.finpoint.domain.piece.repository.PieceMemberRepository;
-import com.fp.finpoint.domain.piece.repository.PieceRepository;
 import com.fp.finpoint.global.exception.BusinessLogicException;
 import com.fp.finpoint.global.exception.ExceptionCode;
 import com.fp.finpoint.global.util.CookieUtil;

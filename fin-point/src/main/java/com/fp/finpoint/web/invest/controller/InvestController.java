@@ -5,17 +5,10 @@ import com.fp.finpoint.domain.invest.dto.InvestDto;
 import com.fp.finpoint.domain.invest.entity.Invest;
 import com.fp.finpoint.domain.invest.service.InvestService;
 import com.fp.finpoint.domain.like.service.LikeService;
-import com.fp.finpoint.domain.member.entity.Member;
-import com.fp.finpoint.domain.member.repository.MemberRepository;
-import com.fp.finpoint.domain.member.service.MemberService;
 import com.fp.finpoint.domain.piece.Entity.Piece;
-import com.fp.finpoint.domain.piece.repository.PieceRepository;
-import com.fp.finpoint.global.exception.BusinessLogicException;
-import com.fp.finpoint.global.exception.ExceptionCode;
 import com.fp.finpoint.global.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +32,6 @@ public class InvestController {
     private final InvestService investService;
     private final InvestFileService investFileService;
     private final LikeService likeService;
-    private final MemberRepository memberRepository;
 
     @GetMapping("/invest/list")
     public String list(Model model,

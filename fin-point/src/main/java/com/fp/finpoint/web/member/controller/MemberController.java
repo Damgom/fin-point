@@ -70,7 +70,7 @@ public class MemberController {
     }
 
     @GetMapping("/finpoint/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
+    public String logout(HttpServletResponse response) {
         CookieUtil.deleteCookie(JwtUtil.AUTHORIZATION,response);
         CookieUtil.deleteCookie(JwtUtil.REFRESH,response);
         return "redirect:/";
