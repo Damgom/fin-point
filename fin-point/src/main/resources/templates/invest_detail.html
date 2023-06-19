@@ -13,6 +13,7 @@
             </div>
         </div>
 
+        <div class="like-read-wrap">
         <div class="like-container" th:if="${#request.getCookies()!= null}">
             <!-- or th:unless="${#strings.equals(investDetail.getMember().getEmail(),login_email)}"-->
             <!-- 로그인 유저와 작성자가 동일하지 않다면 -->
@@ -27,6 +28,12 @@
             <!-- 로그인하지 않은 유저라면 -->
             <img id="loginCheck" src="/images/likes-before.png" alt="" width="30px" height="30px">
             <span th:text="${investDetail.likeCnt}"></span>
+        </div>
+
+        <div class="read-container">
+            <img th:id="readImg" src="/images/readdotcv.png" alt="" width="30px" height="30px">
+            <span class="read-count" th:text="${investDetail.readCount}" />
+        </div>
         </div>
 
         <div class="btn-box">
