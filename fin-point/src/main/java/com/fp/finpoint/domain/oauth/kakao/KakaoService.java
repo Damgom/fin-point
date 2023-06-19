@@ -29,21 +29,17 @@ public class KakaoService {
     private String redirect_uri;
 
     public String getRequireUrl() {
-        String reqUrl = "https://kauth.kakao.com/oauth/authorize?client_id=" + client_id
+        return "https://kauth.kakao.com/oauth/authorize?client_id=" + client_id
                 + "&redirect_uri=" + redirect_uri + "&response_type=code";
-        return reqUrl;
     }
 
     public String loginService(String code) {
         KakaoResponseDto kakaoResponseDto =
                 kakaoLoginFeign.login("authorization_code",client_id,redirect_uri,code);
         String accessToken = "Bearer " + kakaoResponseDto.getAccess_token();
-        log.info("accessToken = {}" , accessToken);
         KakaoProfileResponseDto kakaoProfileResponseDto = kakaoGetProfileFeign.getProfile(accessToken, "application/x-www-form-urlencoded;charset=utf-8");
         String email = kakaoProfileResponseDto.getKakao_account().getEmail();
-        log.info("카카오email = {}", email);
         memberService.manageDuplicateOAuthLogin(email, OauthClient.KAKAO);
         return JwtUtil.createAccessToken(email);
     }
-
 }
