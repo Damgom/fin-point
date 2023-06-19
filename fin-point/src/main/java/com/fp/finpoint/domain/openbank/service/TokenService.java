@@ -7,7 +7,6 @@ import com.fp.finpoint.domain.openbank.Entity.Token;
 import com.fp.finpoint.global.exception.BusinessLogicException;
 import com.fp.finpoint.global.exception.ExceptionCode;
 import com.fp.finpoint.global.util.CookieUtil;
-import com.fp.finpoint.global.util.JwtUtil;
 import com.fp.finpoint.web.openbank.dto.AccountResponseDto;
 import com.fp.finpoint.web.openbank.dto.TokenResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
@@ -63,12 +60,9 @@ public class TokenService {
     }
 
     public void setTokenToMember(Token token, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String accessToken = CookieUtil.getAccessToken(cookies);
-        String email = JwtUtil.getEmail(accessToken);
+        String email = CookieUtil.getEmailToCookie(request);
         log.info("email = {}", email);
-        Member savedMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        Member savedMember = getMember(email);
         savedMember.setToken(token);
         memberRepository.save(savedMember);
     }
@@ -81,7 +75,6 @@ public class TokenService {
         String bankToken = createBankToken(savedToken.getToken_type(), savedToken.getAccess_token());
         AccountResponseDto accountResponseDto =
                 bankingFeign.getAccountList(bankToken, savedToken.getUserSeqNo(), "N", "D");
-        // 등록된 계좌중 첫번째 계좌의 Fintech_use_num 을 가져와서 저장
         String finUseNum = accountResponseDto.getRes_list().get(0).getFintech_use_num();
         savedMember.setFintech_use_num(finUseNum);
         log.info("fin_use_num={}", savedMember.getFintech_use_num());

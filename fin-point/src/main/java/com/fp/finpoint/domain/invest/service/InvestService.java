@@ -8,7 +8,6 @@ import com.fp.finpoint.domain.member.repository.MemberRepository;
 import com.fp.finpoint.domain.piece.Entity.Piece;
 import com.fp.finpoint.domain.piece.Entity.PieceMember;
 import com.fp.finpoint.domain.piece.repository.PieceMemberRepository;
-import com.fp.finpoint.domain.piece.repository.PieceRepository;
 import com.fp.finpoint.global.exception.BusinessLogicException;
 import com.fp.finpoint.global.exception.ExceptionCode;
 import com.fp.finpoint.global.util.CookieUtil;
@@ -31,12 +30,11 @@ public class InvestService {
     private final InvestRepository investRepository;
     private final MemberRepository memberRepository;
     private final PieceMemberRepository pieceMemberRepository;
-    private final PieceRepository pieceRepository;
 
     //게시글 리스트.
     public List<Invest> getInvestList() {
 
-        return this.investRepository.findAll();
+        return investRepository.findAll();
     }
 
     // 특정 게시글.

@@ -29,20 +29,16 @@ public class NaverService {
     private String redirect_uri;
 
     public String getRequireUrl() {
-        String reqUrl = "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" + client_id
+        return "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" + client_id
                 + "&redirect_uri=" + redirect_uri + "&state=1546578234123";
-        return reqUrl;
     }
 
     public String loginService(String code, String state) {
         NaverResponseDto naverResponseDto =
                 naverLoginFeign.login("authorization_code", client_id, client_secret, code, state);
         String accessToken = "Bearer " + naverResponseDto.getAccess_token();
-        log.info("accessToken = {}" , accessToken);
         NaverProfileResponseDto naverProfileResponseDto = naverGetProfileFeign.getProfile(accessToken);
         String email = naverProfileResponseDto.getResponse().getEmail();
-        log.info("email = {}", naverProfileResponseDto.getResponse().getEmail());
-        log.info("nickname = {}", naverProfileResponseDto.getResponse().getNickname());
         memberService.manageDuplicateOAuthLogin(email, OauthClient.NAVER);
         return JwtUtil.createAccessToken(email);
     }

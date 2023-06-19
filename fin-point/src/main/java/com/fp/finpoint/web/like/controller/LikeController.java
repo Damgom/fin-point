@@ -15,24 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequiredArgsConstructor
 public class LikeController {
+
     private final LikeService likeService;
 
-    //상품 좋아요
-    @PostMapping("/invest/list/detail/like/{invest_id}")
+    @PostMapping("/invest/list/detail/like/{investId}")
     @ResponseBody
-    public boolean like(@PathVariable Long invest_id, HttpServletRequest request) {
+    public boolean like(@PathVariable(name = "investId") Long investId, HttpServletRequest request) {
 
         String email = CookieUtil.getEmailToCookie(request);
-
-        //저장 true, 삭제 false
-        boolean result = likeService.saveLike(invest_id, email);
-
-        return result;
-
+        return likeService.saveLike(investId, email);
     }
-
-
-
-
-
 }

@@ -1,6 +1,5 @@
 package com.fp.finpoint.domain.oauth.google;
 
-import com.fp.finpoint.domain.member.repository.MemberRepository;
 import com.fp.finpoint.domain.member.service.MemberService;
 import com.fp.finpoint.domain.oauth.OauthClient;
 import com.fp.finpoint.global.util.JwtUtil;
@@ -16,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -23,7 +23,6 @@ import java.util.Map;
 public class GoogleService {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
 
     @Value("${oauth.google.client_id}")
     private String googleClientId;
@@ -33,9 +32,8 @@ public class GoogleService {
     private String redirect_uri;
 
     public String getRequireUrl() {
-        String reqUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + googleClientId
+        return "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + googleClientId
                 + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=email%20profile%20openid&access_type=offline";
-        return reqUrl;
     }
 
     public String oauthLogin(String authCode) {
@@ -49,15 +47,12 @@ public class GoogleService {
                 .grantType("authorization_code").build();
         ResponseEntity<GoogleResponseDto> resultEntity = restTemplate.postForEntity("https://oauth2.googleapis.com/token",
                 googleOAuthRequestParam, GoogleResponseDto.class);
-        String jwtToken = resultEntity.getBody().getId_token();
+        String jwtToken = Objects.requireNonNull(resultEntity.getBody()).getId_token();
         Map<String, String> map = new HashMap<>();
         map.put("id_token", jwtToken);
         ResponseEntity<GoogleInfoDto> resultEntity2 = restTemplate.postForEntity("https://oauth2.googleapis.com/tokeninfo",
                 map, GoogleInfoDto.class);
-        String email = resultEntity2.getBody().getEmail();
-        String name = resultEntity2.getBody().getName();
-        log.info("email = {}", email);
-        log.info("name = {}", name);
+        String email = Objects.requireNonNull(resultEntity2.getBody()).getEmail();
         memberService.manageDuplicateOAuthLogin(email, OauthClient.GOOGLE);
         return JwtUtil.createAccessToken(email);
     }
