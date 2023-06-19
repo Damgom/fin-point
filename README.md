@@ -83,6 +83,87 @@
 <br>
 <br>
 
+<details>
+<summary> 실행하기 위한 yml</summary>
+<div markdown="1">
+<pre>spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+#  h2:
+#    console:
+#      path: /h2
+#      enabled: true
+#  datasource:
+#    url: jdbc:h2:mem:test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/{DATABASE NAME}
+    username: {DB.USERNAME}
+    password: {DB.PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    open-in-view: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: {SMTP.USERNAME}
+    password: {SMTP.PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  redis:
+    host: localhost
+    port: 6379
+
+login:
+  mail:
+    subject: "[finpoint] 회원가입 안내"
+    imagePath: {STATIC IMAGE PATH}
+    imageId: logo
+    sender: {SMTP.SENDER.EMAILADDRESS}
+
+jwt:
+  salt: {RANDOM SALT VALUE}
+
+oauth:
+  naver:
+    client_id: {OAUTH NAVER CLIENT ID}
+    client_secret: {OAUTH NAVER CLIENT SECRET}
+    callback: {OAUTH CALLBACK URI}
+    state: {OAUTH RANDOM STATE}
+  kakao:
+    client_id: {OAUTH KAKAO CLIENT ID}
+    client_secret: {OAUTH KAKAO CLIENT SECRET}
+    callback: {OAUTH KAKAO CALLBACK URI}
+  google:
+    client_id: {OAUTH GOOGLE CLIENT ID}
+    client_secret: {OAUTH GOOGLE CLIENT SECRET}
+    callback: {OAUTH GOOGLE CALLBACK URI}
+
+bank:
+  client_id: {OPENBANK CLIENT ID}
+  client_secret: {OPENBANK CLIENT SECRET}
+  redirect_uri: {OPENBANK REDIRECT URI}
+  grant_type: {OPENBANK GRANT TYPE}
+  state: {OPENBANK RANDOM STATE}
+
+external:
+  url: 
+  path:
+  account:
+    path: 
+    detail: 
+
+file:
+  dir: {FILE PATH}
+</details>
+
 ## 시연 영상 및 상세 내용
 
 [상세내용](https://enshrined-scooter-6ed.notion.site/ecf5db232b3d4bb5825b25a08f488820?pvs=4)
