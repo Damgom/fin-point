@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,27 +26,24 @@ public class Invest extends Auditable {
     private Long id;
 
     @Column(length = 200)
-    private String subject;//제목
+    private String subject;
 
     @Column(columnDefinition = "TEXT")
-    private String content;//내용
+    private String content;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fileEntity_id")
     private FileEntity fileEntity;
 
-    private LocalDateTime deadline;
-
-    private Integer read_count;//조회수
-
-    private String category;
+    @Column(columnDefinition = "integer default 0")
+    private Integer readCount;
 
     @ManyToOne
     @JoinColumn(name = "memberId")
-    private Member member; //회원
+    private Member member;
 
     @OneToMany(mappedBy = "invest", cascade = CascadeType.REMOVE)
-    private List<Like> likes = new ArrayList<>();//좋아요
+    private List<Like> likes = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "piece_id")
@@ -70,15 +66,15 @@ public class Invest extends Auditable {
         this.piece = piece;
     }
 
-//    public void setFileEntity(FileEntity fileEntity) {
-//        this.fileEntity = fileEntity;
-//    }
-
     public void setSubject(String subject) {
         this.subject = subject;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void read() {
+        this.readCount++;
     }
 }
