@@ -38,6 +38,14 @@ body {
     flex-direction: row;
 }
 
+.like-read-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 .invest-logo {
     width: 200px;
     height: 200px;
@@ -121,6 +129,15 @@ body {
 }
 
 .like-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom : 30px;
+}
+
+.read-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
