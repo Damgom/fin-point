@@ -40,8 +40,12 @@ public class InvestService {
     }
 
     // 특정 게시글.
+    @Transactional
     public Invest readInvestDetail(Long id) {
-        return investRepository.findById(id).orElseThrow(() -> new BusinessLogicException(ExceptionCode.INVEST_NOT_FOUND));
+        Invest savedInvest = investRepository.findById(id).orElseThrow(
+                () -> new BusinessLogicException(ExceptionCode.INVEST_NOT_FOUND));
+        savedInvest.read();
+        return savedInvest;
     }
 
     //게시글 생성.
