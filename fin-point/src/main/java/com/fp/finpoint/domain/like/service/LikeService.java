@@ -37,7 +37,6 @@ public class LikeService {
             Like like = new Like(member, invest);
             likeRepository.save(like);
             investRepository.doLike(investId);
-
             return true;
         } else {
             likeRepository.deleteByInvest_IdAndMember_Email(investId,email);

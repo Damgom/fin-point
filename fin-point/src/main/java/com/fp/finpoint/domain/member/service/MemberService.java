@@ -15,6 +15,7 @@ import com.fp.finpoint.global.util.*;
 import com.fp.finpoint.web.mypage.MypageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,8 @@ public class MemberService {
     private final EmailSenderService emailSenderService;
     private final FileRepository fileRepository;
     private final PieceCustomRepositoryImpl pieceRepo;
+    @Value("${file.default}")
+    private String defaultPath;
 
     public void registerMember(MemberDto memberDto) {
         isExistEmail(memberDto.getEmail());
@@ -198,7 +201,7 @@ public class MemberService {
         FileEntity file = new FileEntity();
         file.setOriginName("");
         file.setOriginName("");
-        file.setSavedPath("/images/default.jpg");
+        file.setSavedPath(defaultPath);
         return fileRepository.save(file);
     }
 }
