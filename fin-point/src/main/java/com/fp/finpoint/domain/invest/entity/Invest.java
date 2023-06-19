@@ -38,8 +38,6 @@ public class Invest extends Auditable {
     @Column(columnDefinition = "integer default 0")
     private Integer readCount;
 
-    private String category;
-
     @ManyToOne
     @JoinColumn(name = "memberId")
     private Member member;
