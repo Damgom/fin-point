@@ -38,13 +38,6 @@ public class InvestService {
     private final PieceMemberRepository pieceMemberRepository;
     private final FileService fileService;
 
-    //게시글 리스트.
-    public List<Invest> getInvestList() {
-
-        return investRepository.findAll();
-    }
-
-    // 특정 게시글.
     @Transactional
     public Invest readInvestDetail(Long id) {
         Invest savedInvest = investRepository.findById(id).orElseThrow(
@@ -53,7 +46,6 @@ public class InvestService {
         return savedInvest;
     }
 
-    //게시글 생성.
     @Transactional
     public void create(InvestDto investDto, String email, MultipartFile file) throws IOException {
         Member findMember = memberRepository.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
@@ -66,13 +58,10 @@ public class InvestService {
         investRepository.save(invest);
     }
 
-    //게시글 삭제.
     public void deleteInvest(Long id) {
         investRepository.deleteById(id);
     }
 
-
-    //게시글 수정
     @Transactional
     public void updateInvest(InvestDto investDto, Long id){
        Invest invest = investRepository.findById(id).orElseThrow(()-> new BusinessLogicException(ExceptionCode.INVEST_NOT_FOUND));
@@ -85,14 +74,10 @@ public class InvestService {
         return fileService.getInvestImageUrl(invest);
     }
 
-
-    //리스트 페이징
     public Page<Invest> investList(Pageable pageable){
         return investRepository.findAll(pageable);
     }
 
-
-    //검색 페이징 제목만
     public Page<Invest> investSearchList(String searchKeyword,Pageable pageable){
         return investRepository.findBySubjectContaining(searchKeyword,pageable);
 
