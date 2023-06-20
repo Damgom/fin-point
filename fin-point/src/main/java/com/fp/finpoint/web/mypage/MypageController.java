@@ -1,6 +1,5 @@
 package com.fp.finpoint.web.mypage;
 
-import com.fp.finpoint.domain.file.service.FileService;
 import com.fp.finpoint.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import java.util.Map;
 @RequestMapping("/finpoint/mypage")
 public class MypageController {
 
-    private final FileService fileService;
     private final MemberService memberService;
 
     @GetMapping("")
@@ -37,7 +35,7 @@ public class MypageController {
     @ResponseBody
     @GetMapping("/image")
     public Resource image(HttpServletRequest request) throws MalformedURLException {
-     return fileService.getImageUrl(request);
+     return memberService.getImageUrl(request);
     }
 
     @PostMapping("/update-profile")

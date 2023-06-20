@@ -1,7 +1,5 @@
 package com.fp.finpoint.web.ranking.controller;
-import com.fp.finpoint.domain.file.service.FileService;
-import com.fp.finpoint.domain.member.repository.MemberRepository;
-import com.fp.finpoint.domain.ranking.dto.RankRequestDto;
+import com.fp.finpoint.domain.member.service.MemberService;
 import com.fp.finpoint.domain.ranking.dto.RankResponseDto;
 import com.fp.finpoint.domain.ranking.service.RankingService;
 import com.fp.finpoint.web.ranking.RankingDto.RankingResponseDto;
@@ -11,7 +9,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.util.List;
 
@@ -22,7 +19,7 @@ import java.util.List;
 public class RankingController {
 
     private final RankingService rankingService;
-    private final FileService fileService;
+    private final MemberService memberService;
 
     @GetMapping("/ranking")
     public String ranking() {
@@ -39,8 +36,6 @@ public class RankingController {
     @ResponseBody
     @GetMapping("/ranking/image/{id}")
     public Resource rankingImage(@PathVariable(value = "id") Long id) throws MalformedURLException {
-        return fileService.getRankingImageUrl(id);
+        return memberService.getImageUrlToMemberId(id);
     }
-
-
 }

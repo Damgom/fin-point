@@ -17,6 +17,7 @@ import com.fp.finpoint.web.mypage.MypageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -205,5 +207,16 @@ public class MemberService {
         String email = getEmailToCookie(request);
         Member savedMember = inspectEmailExistence(email);
         savedMember.setFileEntity(updateFile);
+    }
+
+    public Resource getImageUrl(HttpServletRequest request) throws MalformedURLException {
+        String email = CookieUtil.getEmailToCookie(request);
+        Member savedMember = inspectEmailExistence(email);
+        return fileService.getImageUrl(savedMember);
+    }
+
+    public Resource getImageUrlToMemberId(Long memberId) throws MalformedURLException {
+        Member savedMember = memberRepository.findById(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        return fileService.getImageUrl(savedMember);
     }
 }

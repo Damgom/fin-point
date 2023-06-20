@@ -4,10 +4,8 @@ import com.fp.finpoint.domain.file.entity.FileEntity;
 import com.fp.finpoint.domain.file.repository.FileRepository;
 import com.fp.finpoint.domain.invest.entity.Invest;
 import com.fp.finpoint.domain.member.entity.Member;
-import com.fp.finpoint.domain.member.repository.MemberRepository;
 import com.fp.finpoint.global.exception.BusinessLogicException;
 import com.fp.finpoint.global.exception.ExceptionCode;
-import com.fp.finpoint.global.util.CookieUtil;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +14,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +26,6 @@ import java.util.UUID;
 public class FileService {
 
     private final FileRepository fileRepository;
-    private final MemberRepository memberRepository;
 
     @Value("${file.dir}")
     private String fileDirectory;
@@ -39,15 +35,15 @@ public class FileService {
     @Transactional
     public FileEntity saveFile(MultipartFile files) throws IOException {
         if (files.isEmpty()) {
-            throw new RuntimeException("error");
+            throw new BusinessLogicException(ExceptionCode.FILE_IS_EMPTY);
         }
-        FileEntity file = makeFileName(files);
+        FileEntity file = makeFileEntity(files);
         fileRepository.save(file);
 
         return file;
     }
 
-    public FileEntity makeFileName(MultipartFile files) throws IOException {
+    public FileEntity makeFileEntity(MultipartFile files) throws IOException {
         String originName = files.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();
         String extension = originName.substring(originName.lastIndexOf("."));
@@ -62,18 +58,7 @@ public class FileService {
         return file;
     }
 
-    public Resource getImageUrl(HttpServletRequest request) throws MalformedURLException {
-        String email = CookieUtil.getEmailToCookie(request);
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        FileEntity file = fileRepository.findById(member.getFileEntity().getId())
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        return new UrlResource("file:" + file.getSavedPath());
-    }
-
-    public Resource getRankingImageUrl(Long id) throws MalformedURLException {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    public Resource getImageUrl(Member member) throws MalformedURLException {
         FileEntity file = fileRepository.findById(member.getFileEntity().getId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         return new UrlResource("file:" + file.getSavedPath());
