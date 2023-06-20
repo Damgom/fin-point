@@ -77,4 +77,8 @@ public class Invest extends Auditable {
     public void read() {
         this.readCount++;
     }
+
+    public void setFileEntity(FileEntity fileEntity) {
+        this.fileEntity = fileEntity;
+    }
 }

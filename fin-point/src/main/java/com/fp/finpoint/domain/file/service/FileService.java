@@ -2,6 +2,7 @@ package com.fp.finpoint.domain.file.service;
 
 import com.fp.finpoint.domain.file.entity.FileEntity;
 import com.fp.finpoint.domain.file.repository.FileRepository;
+import com.fp.finpoint.domain.invest.entity.Invest;
 import com.fp.finpoint.domain.member.entity.Member;
 import com.fp.finpoint.domain.member.repository.MemberRepository;
 import com.fp.finpoint.global.exception.BusinessLogicException;
@@ -27,45 +28,38 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    @Value("${file.dir}")
-    private String fileDirectory;
     private final FileRepository fileRepository;
     private final MemberRepository memberRepository;
 
+    @Value("${file.dir}")
+    private String fileDirectory;
+    @Value("${file.default}")
+    private String defaultPath;
+
     @Transactional
-    public Long saveFile(MultipartFile files, HttpServletRequest request) throws IOException {
+    public FileEntity saveFile(MultipartFile files) throws IOException {
         if (files.isEmpty()) {
             throw new RuntimeException("error");
         }
+        FileEntity file = makeFileName(files);
+        fileRepository.save(file);
+
+        return file;
+    }
+
+    public FileEntity makeFileName(MultipartFile files) throws IOException {
         String originName = files.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();
         String extension = originName.substring(originName.lastIndexOf("."));
         String savedName = uuid + extension;
         String savedPath = fileDirectory + savedName;
-        String email = CookieUtil.getEmailToCookie(request);
-
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-
-        FileEntity existingFile = member.getFileEntity();
-
-        if (existingFile != null) {
-            existingFile.setOriginName(originName);
-            existingFile.setSavedName(savedName);
-            existingFile.setSavedPath(savedPath);
-            files.transferTo(new File(savedPath));
-            FileEntity savedFile = fileRepository.save(existingFile);
-            return savedFile.getId();
-        }
         FileEntity file = FileEntity.builder()
                 .originName(originName)
                 .savedName(savedName)
                 .savedPath(savedPath)
                 .build();
         files.transferTo(new File(savedPath));
-        FileEntity savedFile = fileRepository.save(file);
-        member.setFileEntity(file);
-        return savedFile.getId();
+        return file;
     }
 
     public Resource getImageUrl(HttpServletRequest request) throws MalformedURLException {
@@ -85,4 +79,18 @@ public class FileService {
         return new UrlResource("file:" + file.getSavedPath());
     }
 
+    public Resource getInvestImageUrl(Invest invest) throws MalformedURLException {
+        FileEntity file = fileRepository.findById(invest.getFileEntity().getId())
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.VALUE_NOT_FOUND));
+        return new UrlResource("file:" + file.getSavedPath());
+    }
+
+    public FileEntity getDefaultFile() {
+        FileEntity file = new FileEntity();
+        file.setOriginName("");
+        file.setOriginName("");
+        file.setSavedPath(defaultPath);
+        fileRepository.save(file);
+        return file;
+    }
 }

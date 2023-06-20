@@ -2,6 +2,7 @@ package com.fp.finpoint.domain.member.service;
 
 import com.fp.finpoint.domain.file.entity.FileEntity;
 import com.fp.finpoint.domain.file.repository.FileRepository;
+import com.fp.finpoint.domain.file.service.FileService;
 import com.fp.finpoint.domain.member.dto.MemberDto;
 import com.fp.finpoint.domain.member.entity.Member;
 import com.fp.finpoint.domain.member.entity.Role;
@@ -17,10 +18,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -34,17 +37,16 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EmailSenderService emailSenderService;
-    private final FileRepository fileRepository;
     private final PieceCustomRepositoryImpl pieceRepo;
-    @Value("${file.default}")
-    private String defaultPath;
+    private final FileService fileService;
+
 
     public void registerMember(MemberDto memberDto) {
         isExistEmail(memberDto.getEmail());
         String salt = PasswordEncoder.generateSalt();
         String password = PasswordEncoder.hashPassword(memberDto.getPassword(), salt);
         Set<Role> roles = getRoles();
-        FileEntity save = getFileEntity();
+        FileEntity save = fileService.getDefaultFile();
         Member member = Member.builder()
                 .email(memberDto.getEmail())
                 .password(password)
@@ -68,7 +70,7 @@ public class MemberService {
     public void oauthJoin(String email, OauthClient oauthClient) {
         isExistEmail(email);
         Set<Role> roles = getRoles();
-        FileEntity save = getFileEntity();
+        FileEntity save = fileService.getDefaultFile();
         Member member = Member.builder().
                 email(email)
                 .roles(roles)
@@ -197,11 +199,11 @@ public class MemberService {
         return roles;
     }
 
-    private FileEntity getFileEntity() {
-        FileEntity file = new FileEntity();
-        file.setOriginName("");
-        file.setOriginName("");
-        file.setSavedPath(defaultPath);
-        return fileRepository.save(file);
+    @Transactional
+    public void updateProfile(MultipartFile file, HttpServletRequest request) throws IOException {
+        FileEntity updateFile = fileService.saveFile(file);
+        String email = getEmailToCookie(request);
+        Member savedMember = inspectEmailExistence(email);
+        savedMember.setFileEntity(updateFile);
     }
 }

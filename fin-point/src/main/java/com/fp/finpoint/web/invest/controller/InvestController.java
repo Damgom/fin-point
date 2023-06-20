@@ -1,6 +1,5 @@
 package com.fp.finpoint.web.invest.controller;
 
-import com.fp.finpoint.domain.file.service.InvestFileService;
 import com.fp.finpoint.domain.invest.dto.InvestDto;
 import com.fp.finpoint.domain.invest.entity.Invest;
 import com.fp.finpoint.domain.invest.service.InvestService;
@@ -30,7 +29,6 @@ import java.net.MalformedURLException;
 public class InvestController {
 
     private final InvestService investService;
-    private final InvestFileService investFileService;
     private final LikeService likeService;
 
     @GetMapping("/invest/list")
@@ -79,10 +77,9 @@ public class InvestController {
                              @RequestParam MultipartFile file,
                              HttpServletRequest request) throws IOException {
 
-        Long fileEntity = investFileService.saveFile(file);
         log.info("파일 저장 fullPath={}", file);
         String email = CookieUtil.getEmailToCookie(request);
-        investService.create(investDto, email, fileEntity);
+        investService.create(investDto, email, file);
         return "redirect:/finpoint/invest/list";
     }
 
@@ -123,7 +120,7 @@ public class InvestController {
     @ResponseBody
     @GetMapping("/invest/image/{id}")
     public Resource investImage(@PathVariable("id") Long id) throws MalformedURLException {
-        return investFileService.getInvestImageUrl(id);
+        return investService.getInvestImageUrl(id);
     }
 
 }

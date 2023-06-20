@@ -43,7 +43,7 @@ public class MypageController {
     @PostMapping("/update-profile")
     public ResponseEntity<?> uploadFile(@RequestParam("profileImage") MultipartFile file,
                                         HttpServletRequest request) throws IOException {
-        fileService.saveFile(file, request);
+        memberService.updateProfile(file, request);
         Map<String, String> response = new HashMap<>();
         response.put("message", "프로필 이미지 업데이트 성공");
         return ResponseEntity.ok(response);
