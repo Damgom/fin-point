@@ -30,7 +30,7 @@ public enum ExceptionCode {
     TOKEN_NOT_MATCH_KEY(404, "서명이 유효하지 않습니다."),
     TOKEN_EXPIRED(404, "토큰 유효기간 만료 됐습니다."),
     TOKEN_MALFORMED(404, "JWT문자열 구성이 올바르지 않습니다."),
-    TOKEN_Unsupported(404, "JWT 디코딩이 불가능합니다."),
+    TOKEN_UNSUPPORTED(404, "JWT 디코딩이 불가능합니다."),
     REFRESH_NOT_FOUND(404, "존재하지 않는 토큰입니다."),
     REFRESH_INVALID(404, "유효하지 않는 리프레쉬 토큰입니다."),
 
@@ -42,7 +42,8 @@ public enum ExceptionCode {
     INVEST_NOT_FOUND(404, "존재하지 않는 상품입니다."),
 
     // rank
-    RANK_STANDARD_NOT_VALID(404, "랭크 정렬 기준에 문제가 있습니다");
+    RANK_STANDARD_NOT_VALID(404, "랭크 정렬 기준에 문제가 있습니다"),
+    FILE_IS_EMPTY(404, "파일이 필요합니다.");
     @Getter
     final int code;
 
