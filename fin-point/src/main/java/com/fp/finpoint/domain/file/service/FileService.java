@@ -1,5 +1,7 @@
 package com.fp.finpoint.domain.file.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.fp.finpoint.domain.file.entity.FileEntity;
 import com.fp.finpoint.domain.file.repository.FileRepository;
 import com.fp.finpoint.domain.invest.entity.Invest;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.UUID;
@@ -26,55 +27,55 @@ import java.util.UUID;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final AmazonS3 amazonS3;
 
-    @Value("${file.dir}")
-    private String fileDirectory;
-    @Value("${file.default}")
-    private String defaultPath;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+    @Value("${cloud.aws.s3.path}")
+    private String path;
 
     @Transactional
     public FileEntity saveFile(MultipartFile files) throws IOException {
         if (files.isEmpty()) {
             throw new BusinessLogicException(ExceptionCode.FILE_IS_EMPTY);
         }
-        FileEntity file = makeFileEntity(files);
+        FileEntity file = saveFileToS3(files);
         fileRepository.save(file);
 
         return file;
     }
 
-    public FileEntity makeFileEntity(MultipartFile files) throws IOException {
-        String originName = files.getOriginalFilename();
-        String uuid = UUID.randomUUID().toString();
-        String extension = originName.substring(originName.lastIndexOf("."));
-        String savedName = uuid + extension;
-        String savedPath = fileDirectory + savedName;
-        FileEntity file = FileEntity.builder()
-                .originName(originName)
-                .savedName(savedName)
-                .savedPath(savedPath)
+    public FileEntity saveFileToS3(MultipartFile multipartFile) throws IOException {
+        String originalFileName = multipartFile.getOriginalFilename();
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String s3FileName = UUID.randomUUID() + "-" + extension;
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return FileEntity.builder()
+                .originName(originalFileName)
+                .savedName(s3FileName)
+                .savedPath(path)
                 .build();
-        files.transferTo(new File(savedPath));
-        return file;
     }
 
     public Resource getImageUrl(Member member) throws MalformedURLException {
         FileEntity file = fileRepository.findById(member.getFileEntity().getId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        return new UrlResource("file:" + file.getSavedPath());
+        return new UrlResource(file.getSavedPath() + file.getSavedName());
     }
 
     public Resource getInvestImageUrl(Invest invest) throws MalformedURLException {
         FileEntity file = fileRepository.findById(invest.getFileEntity().getId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.VALUE_NOT_FOUND));
-        return new UrlResource("file:" + file.getSavedPath());
+        return new UrlResource(file.getSavedPath() + file.getSavedName());
     }
 
     public FileEntity getDefaultFile() {
         FileEntity file = new FileEntity();
         file.setOriginName("");
-        file.setOriginName("");
-        file.setSavedPath(defaultPath);
+        file.setSavedPath(path);
         fileRepository.save(file);
         return file;
     }
