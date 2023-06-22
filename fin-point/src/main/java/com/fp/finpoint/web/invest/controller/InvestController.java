@@ -83,7 +83,6 @@ public class InvestController {
         return "redirect:/finpoint/invest/list";
     }
 
-    // 글 삭제.
     @GetMapping("/invest/delete/{id}")
     public String boardDelete(@PathVariable("id") Long id) {
         investService.deleteInvest(id);
@@ -113,7 +112,6 @@ public class InvestController {
     @PostMapping("/invest/list/detail/{id}/buy")
     public String test(@PathVariable("id") Long id, HttpServletRequest request, @RequestParam("count") Long count) {
         investService.purchase(id, request, count);
-        log.info("count={}",count);
         return "redirect:/finpoint/invest/list";
     }
 
@@ -122,6 +120,4 @@ public class InvestController {
     public Resource investImage(@PathVariable("id") Long id) throws MalformedURLException {
         return investService.getInvestImageUrl(id);
     }
-
 }
-
