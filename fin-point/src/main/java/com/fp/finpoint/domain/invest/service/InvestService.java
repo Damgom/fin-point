@@ -68,8 +68,12 @@ public class InvestService {
     }
 
     @Transactional
-    public void updateInvest(InvestDto investDto, Long id){
-       Invest invest = investRepository.findById(id).orElseThrow(()-> new BusinessLogicException(ExceptionCode.INVEST_NOT_FOUND));
+    public void updateInvest(InvestDto investDto, Long id, HttpServletRequest request){
+        String email = CookieUtil.getEmailToCookie(request);
+        Invest invest = investRepository.findById(id).orElseThrow(()-> new BusinessLogicException(ExceptionCode.INVEST_NOT_FOUND));
+        if (!invest.getMember().getEmail().equals(email)) {
+            throw new BusinessLogicException(ExceptionCode.NOT_VALID_MEMBER);
+        }
         invest.setSubject(investDto.getSubject());
         invest.setContent(investDto.getContent());
     }

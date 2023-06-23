@@ -99,9 +99,9 @@ public class InvestController {
     }
 
     @PostMapping("/invest/update/{id}")
-    public String investUpdate(@PathVariable("id") Long id, Model model, InvestDto investDto) {
+    public String investUpdate(@PathVariable("id") Long id, Model model, InvestDto investDto, HttpServletRequest request) {
 
-        investService.updateInvest(investDto,id);
+        investService.updateInvest(investDto,id, request);
 
         model.addAttribute("message", "수정 되었습니다.");
         model.addAttribute("SearchUrl", "/finpoint/invest/list");

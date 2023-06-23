@@ -133,16 +133,19 @@
 
     // /** 삭제 알림 **/
     $('#delete').click(function () {
+        let investId = $('#investId').val();
         $.ajax({
-            success: function (response) {
-                if (response === 'ok') {
+            type: 'GET',
+            url: '/finpoint/invest/delete/' + investId,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data, textStatus, xhr) {
+                if (xhr.status === 200) {
                     alert("삭제 되었습니다.");
-                } else {
-                    alert("작성자가 일치하지 않습니다.");
                 }
             },
             error: function () {
-                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                alert("작성자가 일치하지 않습니다.");
+                location.reload();
             }
         });
     });
