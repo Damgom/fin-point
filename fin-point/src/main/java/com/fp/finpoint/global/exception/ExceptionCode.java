@@ -40,6 +40,7 @@ public enum ExceptionCode {
 
     //invset
     INVEST_NOT_FOUND(404, "존재하지 않는 상품입니다."),
+    NOT_VALID_MEMBER(404, "작성자와 일치하지 않습니다"),
 
     // rank
     RANK_STANDARD_NOT_VALID(404, "랭크 정렬 기준에 문제가 있습니다"),
