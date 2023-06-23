@@ -43,7 +43,7 @@ public class GoogleService {
                 .clientId(googleClientId)
                 .clientSecret(googleClientPw)
                 .code(authCode)
-                .redirectUri("http://localhost:8080/finpoint/google/auth")
+                .redirectUri(redirect_uri)
                 .grantType("authorization_code").build();
         ResponseEntity<GoogleResponseDto> resultEntity = restTemplate.postForEntity("https://oauth2.googleapis.com/token",
                 googleOAuthRequestParam, GoogleResponseDto.class);

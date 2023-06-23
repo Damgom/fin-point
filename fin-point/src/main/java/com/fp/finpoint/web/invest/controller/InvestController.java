@@ -84,8 +84,8 @@ public class InvestController {
     }
 
     @GetMapping("/invest/delete/{id}")
-    public String boardDelete(@PathVariable("id") Long id) {
-        investService.deleteInvest(id);
+    public String boardDelete(@PathVariable("id") Long id, HttpServletRequest request) {
+        investService.deleteInvest(id, request);
 
         return "redirect:/finpoint/invest/list";
     }

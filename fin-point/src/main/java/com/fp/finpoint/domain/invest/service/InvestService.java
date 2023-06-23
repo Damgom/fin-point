@@ -58,7 +58,12 @@ public class InvestService {
         investRepository.save(invest);
     }
 
-    public void deleteInvest(Long id) {
+    public void deleteInvest(Long id, HttpServletRequest request) {
+        String email = CookieUtil.getEmailToCookie(request);
+        Invest savedInvest = investRepository.findById(id).orElseThrow(() -> new BusinessLogicException(ExceptionCode.INVEST_NOT_FOUND));
+        if (!savedInvest.getMember().getEmail().equals(email)) {
+            throw new BusinessLogicException(ExceptionCode.NOT_VALID_MEMBER);
+        }
         investRepository.deleteById(id);
     }
 
