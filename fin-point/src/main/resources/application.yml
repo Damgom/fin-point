@@ -1,0 +1,8 @@
+spring:
+  config:
+    import:
+      - security/application-bank.yml
+      - security/application-datasource.yml
+      - security/application-cloud.yml
+      - security/application-oauth.yml
+      - security/application-email.yml
